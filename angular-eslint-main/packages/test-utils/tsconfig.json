@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc/test-utils"
+  },
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../bundled-angular-compiler"
+    },
+    {
+      "path": "../template-parser"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

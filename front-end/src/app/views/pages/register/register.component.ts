@@ -20,15 +20,7 @@ export class RegisterComponent {
   registerForm!: FormGroup;
 
   constructor(private service: AuthService, private fb: FormBuilder, private router: Router, private iconSetService: IconSetService) {
-    this.iconSetService.icons = {
-      cilContact,
-      cilUser,
-      cilMap,
-      cilLocationPin,
-      cilLockLocked,
-      cilPhone,
-      cilHome
-    };    
+    this.iconSetService.icons = { cilContact, cilUser, cilMap, cilLocationPin, cilLockLocked, cilPhone, cilHome };    
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       nom: ['', Validators.required],

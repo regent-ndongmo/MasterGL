@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../dist/out-tsc/tools",
+    "resolveJsonModule": true
+  },
+  "references": [
+    {
+      "path": "../packages/utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../packages/test-utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../packages/eslint-plugin/tsconfig.lib.json"
+    },
+    {
+      "path": "../packages/eslint-plugin-template/tsconfig.lib.json"
+    }
+  ]
+}

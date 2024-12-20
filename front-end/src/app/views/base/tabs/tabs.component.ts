@@ -44,6 +44,6 @@ export class AppTabsComponent {
   readonly activeItem = signal(0);
 
   handleActiveItemChange(value: string | number | undefined) {
-    this.activeItem.set(<number>value);
+    this.activeItem.set((value as number));
   }
 }

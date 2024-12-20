@@ -1,0 +1,11 @@
+{
+    "extends": ["stylelint-config-standard", "stylelint-prettier/recommended"],
+    "rules": {
+      "indentation": 2,
+      "string-quotes": "single",
+      "max-line-length": 100,
+      "no-empty-source": true,
+      "color-hex-length": "short"
+    }
+  }
+  

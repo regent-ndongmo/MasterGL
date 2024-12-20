@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc/schematics"
+  },
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../template-parser"
+    },
+    {
+      "path": "../eslint-plugin-template"
+    },
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../test-utils"
+    },
+    {
+      "path": "../bundled-angular-compiler"
+    },
+    {
+      "path": "../eslint-plugin"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

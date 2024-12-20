@@ -27,7 +27,7 @@ import {
   TabsListComponent
 } from '@coreui/angular';
 
-type CardColor = {
+interface CardColor {
   color: string
   textColor?: string
 }

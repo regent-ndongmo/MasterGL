@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
     this.#activatedRoute.queryParams
       .pipe(
         delay(1),
-        map(params => <string>params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0]),
+        map(params => (params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0] as string)),
         filter(theme => ['dark', 'light', 'auto'].includes(theme)),
         tap(theme => {
           this.#colorModeService.colorMode.set(theme);

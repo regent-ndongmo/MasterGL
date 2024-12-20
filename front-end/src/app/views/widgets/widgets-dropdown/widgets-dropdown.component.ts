@@ -236,7 +236,7 @@ export class ChartSample implements AfterViewInit {
       };
       const newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May'];
       const newData = [42, 88, 42, 66, 77];
-      let { datasets, labels } = { ...this.data };
+      const { datasets, labels } = { ...this.data };
       // @ts-ignore
       const before = this.chartComponent?.chart?.data.datasets.length;
       console.log('before', before);
