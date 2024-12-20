@@ -36,15 +36,9 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterRequest input) {
-        Long defauldRoleId;
-        if (input.getRole().getId() != null) {
-            defauldRoleId = input.getRole().getId();
-        }
-        else {
-            defauldRoleId = 1L;
-        }
 
-        Optional<Role> role = roleRepository.findByIdOrNull(defauldRoleId);
+
+        Optional<Role> role = roleRepository.findByIdOrNull(input.getRole().getId());
         if (role.isPresent()) {
             input.setRole(role.get());
         }

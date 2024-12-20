@@ -1,7 +1,12 @@
 package com.projetGL.refactoring.authentification.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @AllArgsConstructor
 public class LoginRequest {
     
@@ -9,16 +14,4 @@ public class LoginRequest {
 
     private final String password;
 
-    public LoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
 }
