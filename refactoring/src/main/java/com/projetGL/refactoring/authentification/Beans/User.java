@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +16,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+@Setter
 @Entity
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class User implements UserDetails {
@@ -108,87 +111,4 @@ public class User implements UserDetails {
         return password;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public void setNumeroCNI(String numeroCNI) {
-        this.numeroCNI = numeroCNI;
-    }
-
-    public void setNumeroTelephone(String numeroTelephone) {
-        this.numeroTelephone = numeroTelephone;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public void setRoles(Role roles) {
-        this.roles = roles;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public String getNumeroCNI() {
-        return numeroCNI;
-    }
-
-    public String getNumeroTelephone() {
-        return numeroTelephone;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public Role getRoles() {
-        return roles;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
 }

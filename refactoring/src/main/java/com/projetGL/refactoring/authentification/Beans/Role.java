@@ -1,5 +1,6 @@
 package com.projetGL.refactoring.authentification.Beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,11 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Role {
 
     @Id
@@ -21,34 +25,11 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String roleName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private List<User> users;
 
     public Role(String role) {
         this.roleName = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 }

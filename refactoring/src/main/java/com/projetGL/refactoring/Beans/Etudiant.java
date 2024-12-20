@@ -1,10 +1,8 @@
 package com.projetGL.refactoring.Beans;
 
 import com.projetGL.refactoring.authentification.Beans.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -12,8 +10,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Etudiant extends User {
+@AllArgsConstructor
+public class Etudiant{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String matricule;
@@ -24,4 +26,6 @@ public class Etudiant extends User {
     @ManyToOne
     @JoinColumn(name = "filiere_id")
     private Filiere filiere;
+
+
 }
