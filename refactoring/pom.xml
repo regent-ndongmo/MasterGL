@@ -164,6 +164,7 @@
 				<version>3.0.0</version>
 				<configuration>
 					<argLine>
+						-javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.15.10/byte-buddy-agent-1.15.10.jar
 						-Xshare:off
 					</argLine>
 				</configuration>
