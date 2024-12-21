@@ -1,16 +1,11 @@
-name: Build Check
+name: Build Angular project
 
 on:
   push:
-    branches-ignore:
-      - "dependabot/**"
+    branches: [ "Develop", "main" ]
   pull_request:
-    branches:
-      - main
-      - v5.*
-  schedule:
-    - # build runs every weekday at 4:15AM UTC
-    - cron: '15 4 * * *'
+    branches: [ "Develop", "main" ]
+
 
 env:
   FORCE_COLOR: 2
