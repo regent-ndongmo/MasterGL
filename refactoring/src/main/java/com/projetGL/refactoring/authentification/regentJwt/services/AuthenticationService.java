@@ -40,8 +40,7 @@ public class AuthenticationService {
 
     public User signup(RegisterRequest input) {
 
-
-        Optional<Role> role = roleRepository.findByIdOrNull(input.getRole().getId());
+        Optional<Role> role = roleRepository.findByIdOrNull(1L);
         if (role.isPresent()) {
             input.setRole(role.get());
         }
