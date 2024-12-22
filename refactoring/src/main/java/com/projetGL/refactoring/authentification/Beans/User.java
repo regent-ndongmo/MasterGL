@@ -106,6 +106,18 @@ public class User implements UserDetails {
         this.roles = userRole;
     }
 
+    public User(Long id, String mail, String admin, String admin1, String kit156, String number, String password, String dschang, Role userRole) {
+        this.id = id;
+        this.email = mail;
+        this.nom = admin;
+        this.prenom = admin1;
+        this.numeroCNI = kit156;
+        this.numeroTelephone = number;
+        this.password = password;
+        this.adresse = dschang;
+        this.roles = userRole;
+    }
+
     @Override
     public String getPassword() {
         return password;
