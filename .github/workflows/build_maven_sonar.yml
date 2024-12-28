@@ -46,7 +46,7 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: root
         run: |
           cd refactoring
-          run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MasterGL -Dsonar.projectName='MasterGL'
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MasterGL -Dsonar.projectName='MasterGL'
         
       - name: Run tests
         run: |
