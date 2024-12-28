@@ -36,28 +36,7 @@ jobs:
           mysql -h 127.0.0.1 -P 3306 -u root -proot -e "SHOW DATABASES LIKE 'testdb';"
         env:
           MYSQL_ROOT_PASSWORD: root
-
-      # - name: Wait for MySQL to be ready
-      #   run: |
-      #     until mysqladmin ping -h mysql --silent; do
-      #       echo "Waiting for MySQL..."
-      #       sleep 5
-      #     done
-
-      - name: Clean Maven Build
-        run: |
-          cd refactoring
-          mvn -B clean --file pom.xml
-
-      - name: Build with Maven
-        run: |
-          cd refactoring
-          mvn -B package --file pom.xml
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testdb
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: root
-
+          
       - name: Run SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
