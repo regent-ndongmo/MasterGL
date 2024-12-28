@@ -1,41 +1,79 @@
-name: Build
+name: Build and Analyze with SonarQube
 
 on:
   push:
-    branches:
-      - Develop
-
+    branches: [ "Develop", "main" ]
+  pull_request:
+    branches: [ "Develop", "main" ]
 
 jobs:
   build:
-    name: Build and analyze
     runs-on: ubuntu-latest
-    
+
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Téléchargement des sources de notre application
+        uses: actions/checkout@v4
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 21
-          distribution: 'zulu' # Alternative distribution options are available.
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Verify MySQL Database Creation
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -proot -e "SHOW DATABASES LIKE 'testdb';"
+        env:
+          MYSQL_ROOT_PASSWORD: root
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysqladmin ping -h mysql --silent; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Clean Maven Build
+        run: |
+          cd refactoring
+          mvn -B clean --file pom.xml
+
+      - name: Build with Maven
+        run: |
+          cd refactoring
+          mvn -B package --file pom.xml
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testdb
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
+
+      - name: Run SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testdb
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
         run: |
           cd refactoring
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MasterGL -Dsonar.projectName='MasterGL'
+          mvn sonar:sonar -Dsonar.projectKey=MasterGL -Dsonar.projectName="MasterGL"
+        
+      - name: Run tests
+        run: |
+          cd refactoring
+          mvn test --file pom.xml
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testdb
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
