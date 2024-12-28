@@ -28,6 +28,10 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<sonar.projectKey>MasterGL</sonar.projectKey>
+		<sonar.host.url>https://9cc1-154-72-171-156.ngrok-free.app</sonar.host.url>
+		<sonar.login>admin</sonar.login>
+		<sonar.password>jauressNdongmo@2024</sonar.password>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -193,6 +197,11 @@
 						-Xshare:off
 					</argLine>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.9.1.2184</version>
 			</plugin>
 		</plugins>
 	</build>
