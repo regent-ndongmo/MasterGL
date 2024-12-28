@@ -1,0 +1,74 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build SonarQube CI with Maven Before Deployment
+
+on:
+  push:
+    branches: [ "Develop", "main" ]
+  pull_request:
+    branches: [ "Develop", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Téléchargement des sources de notre application
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Verify MySQL Database Creation
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -proot -e "SHOW DATABASES LIKE 'testdb';"
+        env:
+          MYSQL_ROOT_PASSWORD: root
+
+      - name: Clean Maven Build
+        run: |
+          cd refactoring
+          mvn -B clean --file pom.xml
+
+      - name: Build with Maven
+        run: |
+          cd refactoring
+          mvn -B package --file pom.xml
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
+
+      - name: Run tests
+        run: |
+          cd refactoring
+          mvn test --file pom.xml
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
+
+      - name: Run Sonar 
+        run: |
+          cd refactoring
+          mvn sonar:sonar
