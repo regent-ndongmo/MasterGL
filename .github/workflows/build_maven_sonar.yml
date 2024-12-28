@@ -37,12 +37,12 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
 
-      - name: Wait for MySQL to be ready
-        run: |
-          until mysqladmin ping -h mysql --silent; do
-            echo "Waiting for MySQL..."
-            sleep 5
-          done
+      # - name: Wait for MySQL to be ready
+      #   run: |
+      #     until mysqladmin ping -h mysql --silent; do
+      #       echo "Waiting for MySQL..."
+      #       sleep 5
+      #     done
 
       - name: Clean Maven Build
         run: |
@@ -67,7 +67,7 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: root
         run: |
           cd refactoring
-          mvn sonar:sonar -Dsonar.projectKey=MasterGL -Dsonar.projectName="MasterGL"
+          run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MasterGL -Dsonar.projectName='MasterGL'
         
       - name: Run tests
         run: |
