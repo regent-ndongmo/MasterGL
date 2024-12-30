@@ -68,7 +68,7 @@ export class AuthService {
 
   // Méthode pour obtenir le rôle de l'utilisateur
   getRole(): string{
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem('currentuser');
     return user ? JSON.parse(user).role : "client";
   }
 
@@ -76,7 +76,9 @@ export class AuthService {
   logout() {
     if(confirm("Voulez vous vous deconnecter de tout vos compte ? ")){
       this.changeState(false);
+      console.log("currentuser", localStorage.getItem('currentuser'));
       localStorage.removeItem('currentuser');
+      console.log("currentuser after:", localStorage.getItem('currentuser'));
       this.router.navigate(['/dashboard'])
     }
 

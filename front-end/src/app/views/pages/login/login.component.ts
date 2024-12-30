@@ -44,8 +44,9 @@ export class LoginComponent {
   
     this.service.login(payload).subscribe(
       (res: any) => {
-        console.log(res);
-        localStorage.setItem('currentuser', res.email);
+        localStorage.setItem('currentuser', payload.email);
+        console.log(localStorage.getItem('currentuser'));
+        
         this.router.navigate(['/dashboard']);
       },
       (err) => {

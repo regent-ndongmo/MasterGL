@@ -1,23 +1,34 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, CardBodyComponent, CardComponent, ColComponent, ContainerComponent, InputGroupComponent, InputGroupTextDirective, RowComponent, TextColorDirective } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
+import { IconDirective, IconSetService, IconModule } from '@coreui/icons-angular';
 import { AuthService } from '../../../Auth/service/auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { cilContact, cilHome, cilLocationPin, cilLockLocked, cilMap, cilPhone, cilUser } from '@coreui/icons';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   standalone: true,
-  imports: [ HttpClientModule, RouterModule, CommonModule, ReactiveFormsModule, ContainerComponent,IconDirective, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, InputGroupComponent, InputGroupTextDirective, ButtonDirective],
+  imports: [ IconModule, HttpClientModule, RouterModule, CommonModule, ReactiveFormsModule, ContainerComponent,IconDirective, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, InputGroupComponent, InputGroupTextDirective, ButtonDirective],
+  providers: [IconSetService],
 })
 export class RegisterComponent {
   registerForm!: FormGroup;
 
-  constructor(private service: AuthService, private fb: FormBuilder, private router: Router) {
+  constructor(private service: AuthService, private fb: FormBuilder, private router: Router, private iconSetService: IconSetService) {
+    this.iconSetService.icons = {
+      cilContact,
+      cilUser,
+      cilMap,
+      cilLocationPin,
+      cilLockLocked,
+      cilPhone,
+      cilHome
+    };    
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       nom: ['', Validators.required],
@@ -38,49 +49,47 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.registerForm.invalid) {
-      // Log les erreurs pour chaque champ
-      console.log('Form Errors:', this.registerForm.errors);
       Object.keys(this.registerForm.controls).forEach((controlName) => {
         const control = this.registerForm.get(controlName);
-        if (control && control.invalid) {
-          console.log(`${controlName} Errors:`, control.errors);
-        }
+        control?.markAsTouched({ onlySelf: true });
       });
-  
       alert('Please fill all the required fields correctly.');
       return;
     }
   
-    const { confirmPassword, ...formValues } = this.registerForm.value; // Exclude confirmPassword
+    const { confirmPassword, ...formValues } = this.registerForm.value;
     const payload = {
       ...formValues,
-      role: {
-        id: 1, // Include role.id with a value of 3
-      },
+      role: { id: 1 },
     };
-    console.log('payload:', payload);
   
     this.service.register(payload).subscribe(
       (res: any) => {
-        console.log(res);
+        console.log('Registration successful:', res);
+        res.status(200).json({ message: 'User registered successfully' });
+        alert('Registration successful! Redirecting to login...');
         this.router.navigate(['/login']);
       },
       (err) => {
-        console.error('Registration error:', err);
-  
-        // Handle the 500 status with email conflict message
+        // console.error('Registration error:', err);  
         if (err.status === 500) {
-          // Attempt to parse the error response for more details
           if (err.error && typeof err.error.message === 'string' && err.error.message.includes('email')) {
-            alert('An error occurred while creating your account. Please review your informations and try again.');
+            alert('This email is already in use. Please use another email.');
           } else {
             alert('A server error occurred. Please try again later.');
           }
-        } else {
+        } else if (err.status === 400) {
+          alert('Invalid data provided. Please review your information.');
+        } else if (err.status === 409) {
+          alert('The email is already registered. Try logging in.');
+        } else if (err.status === 200) {
+          console.log('Registration successful:', payload);
+          alert('Registration successful! Redirecting to login...');
+          this.router.navigate(['/login']);
+        }else{
           alert('An unexpected error occurred. Please try again later.');
         }
       }
     );
-  }
-  
+  }  
 }
