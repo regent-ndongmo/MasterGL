@@ -23,6 +23,7 @@ import {
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
+import { AuthService } from '../../../Auth/service/auth.service';
 
 @Component({
     selector: 'app-default-header',
@@ -45,10 +46,13 @@ export class DefaultHeaderComponent extends HeaderComponent {
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
-  constructor() {
+  constructor(public service: AuthService){
     super();
   }
-
+  logout() {
+  this.service.logout();
+  }
+  
   sidebarId = input('sidebar1');
 
   public newMessages = [
