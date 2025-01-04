@@ -45,6 +45,7 @@ export class LoginComponent {
     this.service.login(payload).subscribe(
       (res: any) => {
         localStorage.setItem('currentuser', payload.email);
+        localStorage.setItem('token', res.token)
         console.log(localStorage.getItem('currentuser'));
         
         this.router.navigate(['/dashboard']);

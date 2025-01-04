@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -13,6 +13,7 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
 
   private apiUrl = `${environment.apiUrl}`;
+  private apiBaseUrl = `${environment.apiBaseUrl}`;
 
 
   private componentState: BehaviorSubject<boolean>;
@@ -36,11 +37,22 @@ export class AuthService {
   clickButton(): void {
     this.buttonClicked.next(true);
   }
-
+  
   login(data: Login): Observable<ApiResponse>  {
     return this.httpClient.post<ApiResponse>(`${this.apiUrl}/login`, data);
   }
 
+  getStudent(): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token not found');
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'accept': '*/*'
+    });
+    return this.httpClient.get(`${this.apiBaseUrl}/etudiant/`, { headers });
+  }
   register(data: Register) {
     return this.httpClient.post(`${this.apiUrl}/signup`, data);
   }

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
-
+import { EtudiantComponent } from './views/etudiant/etudiant.component';
 export const routes: Routes = [
   {
     path: '',
@@ -53,6 +53,10 @@ export const routes: Routes = [
       {
         path: 'pages',
         loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
+      },
+      {
+        path: 'etudiant',
+        component: EtudiantComponent
       }
     ]
   },
