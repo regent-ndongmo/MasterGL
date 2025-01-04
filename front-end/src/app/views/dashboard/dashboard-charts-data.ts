@@ -28,7 +28,7 @@ export class DashboardChartsData {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  initMainChart(period: string = 'Month') {
+  initMainChart(period = 'Month') {
     const brandSuccess = getStyle('--cui-success') ?? '#4dbd74';
     const brandInfo = getStyle('--cui-info') ?? '#20a8d8';
     const brandInfoBg = `rgba(${getStyle('--cui-info-rgb')}, .1)`
@@ -64,7 +64,7 @@ export class DashboardChartsData {
         'December'
       ];
     } else {
-      /* tslint:disable:max-line-length */
+     
       const week = [
         'Monday',
         'Tuesday',

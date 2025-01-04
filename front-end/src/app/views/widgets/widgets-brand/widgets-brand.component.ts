@@ -4,7 +4,7 @@ import { IconDirective } from '@coreui/icons-angular';
 import { ColComponent, RowComponent, WidgetStatDComponent } from '@coreui/angular';
 import { ChartData } from 'chart.js';
 
-type BrandData = {
+interface BrandData {
   icon: string
   values: any[]
   capBg?: any
@@ -107,7 +107,7 @@ export class WidgetsBrandComponent implements AfterContentInit {
   ];
 
   capStyle(value: string) {
-    return !!value ? { '--cui-card-cap-bg': value } : {};
+    return value ? { '--cui-card-cap-bg': value } : {};
   }
 
   ngAfterContentInit(): void {

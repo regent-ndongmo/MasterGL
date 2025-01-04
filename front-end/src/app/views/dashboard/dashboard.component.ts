@@ -140,7 +140,7 @@ export class DashboardComponent implements OnInit {
       this.setChartStyles();
     }
   });
-  public chart: Array<IChartProps> = [];
+  public chart: IChartProps[] = [];
   public trafficRadioGroup = new FormGroup({
     trafficRadio: new FormControl('Month')
   });

@@ -11,7 +11,7 @@ import { RowComponent, FormDirective, ColComponent, TextColorDirective, CardComp
 })
 export class ChecksRadiosComponent {
 
-inputDisabled: null = null;
+inputDisabled = null;
 
   formGroup = this.formBuilder.group({
     flexRadioGroup: this.formBuilder.group({

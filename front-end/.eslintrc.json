@@ -1,0 +1,78 @@
+{
+  "root": true,
+  "ignorePatterns": ["node/**/*"], // Ignore specific paths if needed
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.json"]
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "eslint:recommended",
+        "prettier"
+      ],
+      "rules": {
+        // TypeScript-specific rules
+        "@typescript-eslint/explicit-function-return-type": "warn", // Ensure functions specify return types
+        "@typescript-eslint/no-explicit-any": "warn", // Discourage the use of `any`
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
+        ],
+        "@typescript-eslint/consistent-type-definitions": ["error", "interface"], // Enforce `interface` over `type`
+        "@typescript-eslint/member-ordering": "warn", // Suggest a consistent member ordering
+        "@typescript-eslint/prefer-for-of": "warn", // Prefer `for-of` loops for readability
+        "@typescript-eslint/no-floating-promises": "error", // Ensure promises are handled properly
+        "@typescript-eslint/no-unnecessary-type-assertion": "warn", // Discourage unnecessary type assertions
+
+        // General code quality
+        "no-console": ["warn", { "allow": ["warn", "error"] }], // Warn on console.logs, allow warn/error
+        "no-debugger": "error", // Prevent the use of debugger
+        "prefer-const": "warn", // Suggest `const` when variables are not reassigned
+        "eqeqeq": ["error", "always"], // Enforce strict equality `===`
+        "no-var": "error", // Enforce `let` or `const` instead of `var`
+
+        // Angular-specific rules
+        "@angular-eslint/no-empty-lifecycle-method": "warn", // Discourage unused lifecycle methods
+        "@angular-eslint/component-class-suffix": ["error", { "suffixes": ["Component"] }], // Enforce component naming
+        "@angular-eslint/directive-class-suffix": ["error", { "suffixes": ["Directive"] }], // Enforce directive naming
+        "@angular-eslint/no-input-rename": "warn", // Discourage renaming @Input properties
+        "@angular-eslint/use-lifecycle-interface": "warn", // Enforce lifecycle interface implementation
+        "@angular-eslint/no-output-native": "error", // Prevent native DOM event names for @Output
+
+        // Best practices
+        "no-duplicate-imports": "error", // Prevent duplicate imports
+        "no-magic-numbers": ["warn", { "ignore": [0, 1] }], // Discourage hardcoded numbers
+        "complexity": ["warn", 10], // Warn if function complexity exceeds 10
+        "max-lines-per-function": [
+          "warn",
+          { "max": 50, "skipBlankLines": true, "skipComments": true }
+        ], // Limit function size
+        "max-depth": ["warn", 4], // Limit nesting depth
+
+        // Code style and formatting
+        "prettier/prettier": [
+          "warn",
+          {
+            "singleQuote": true,
+            "semi": true,
+            "tabWidth": 2,
+            "useTabs": false,
+            "printWidth": 100
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {
+        "@angular-eslint/template/no-negated-async": "error", // Prevent using negated async pipes
+        "@angular-eslint/template/i18n": ["warn", { "checkId": true }] // Encourage translations
+      }
+    }
+  ]
+}

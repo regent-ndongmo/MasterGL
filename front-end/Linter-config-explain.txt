@@ -1,0 +1,23 @@
+Key Features
+Encourages TypeScript Best Practices:
+
+Enforces explicit types and discourages any.
+Requires consistent coding styles (e.g., member ordering).
+
+Angular-Specific Rules:
+
+Focus on proper lifecycle hook usage, naming conventions, and structural best practices.
+
+General JavaScript/TypeScript Quality:
+
+Prevents common issues like unused variables, duplicate imports, or unhandled promises.
+Includes strict equality checks (eqeqeq), const usage, and cleaner loops.
+
+Code Complexity:
+
+Sets warnings for complex functions (complexity and max-lines-per-function).
+Limits excessive nesting (max-depth).
+
+Formatting with Prettier:
+
+Ensures consistent formatting using prettier with a single source of truth for style.

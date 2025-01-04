@@ -1,0 +1,37 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "emitDeclarationOnly": false,
+    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo"
+  },
+  "exclude": ["**/*.spec.ts"],
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../schematics/tsconfig.lib.json"
+    },
+    {
+      "path": "../template-parser/tsconfig.lib.json"
+    },
+    {
+      "path": "../eslint-plugin-template/tsconfig.lib.json"
+    },
+    {
+      "path": "../utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../test-utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../bundled-angular-compiler/tsconfig.lib.json"
+    },
+    {
+      "path": "../eslint-plugin/tsconfig.lib.json"
+    },
+    {
+      "path": "../builder/tsconfig.lib.json"
+    }
+  ]
+}

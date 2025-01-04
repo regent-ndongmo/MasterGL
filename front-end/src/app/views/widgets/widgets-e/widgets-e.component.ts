@@ -78,7 +78,7 @@ export class WidgetsEComponent implements AfterContentInit {
     return data;
   }
 
-  get baseDatasets(): Array<any> {
+  get baseDatasets(): any[] {
     return [
       {
         data: this.randomData,

@@ -1,0 +1,167 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "nxCloudAccessToken": "NzNkMDZiM2MtMzVlOS00YzVlLWE1MGQtNWZlYzI3MjRkOTRmfHJlYWQ=",
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {}
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "include": [
+        "packages/builder/**",
+        "packages/bundled-angular-compiler/**",
+        "packages/eslint-plugin-template/**",
+        "packages/eslint-plugin/**"
+      ],
+      "options": {
+        "build": {
+          "targetName": "compile"
+        }
+      }
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "exclude": [
+        "*",
+        "packages/builder/**",
+        "packages/eslint-plugin-template/**",
+        "packages/eslint-plugin/**",
+        "packages/nx-plugin/**",
+        "packages/schematics/**"
+      ],
+      "options": {
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json"
+        }
+      }
+    }
+  ],
+  "release": {
+    "projects": ["packages/*", "!nx-plugin"],
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "preserveLocalDependencyProtocols": true
+      }
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github"
+      },
+      "projectChangelogs": true
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build", "^compile"],
+      "inputs": ["production", "^production"],
+      "cache": true
+    },
+    "compile": {
+      "dependsOn": ["^build", "^compile"],
+      "inputs": ["production", "^production"],
+      "cache": true
+    },
+    "update-rule-docs": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/packages/eslint-plugin/src/**/*.ts",
+        "{workspaceRoot}/packages/eslint-plugin-template/src/**/*.ts",
+        "{workspaceRoot}/tools/scripts/generate-rule-docs.ts"
+      ],
+      "cache": true
+    },
+    "update-rule-lists": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/packages/eslint-plugin/src/**/*.ts",
+        "{workspaceRoot}/packages/eslint-plugin-template/src/**/*.ts",
+        "{workspaceRoot}/tools/scripts/generate-rule-lists.ts"
+      ],
+      "cache": true
+    },
+    "update-rule-configs": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/packages/eslint-plugin/src/**/*.ts",
+        "{workspaceRoot}/packages/eslint-plugin-template/src/**/*.ts",
+        "{workspaceRoot}/tools/scripts/generate-rule-configs.ts"
+      ],
+      "cache": true
+    },
+    "lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/eslint.config.js"
+      ],
+      "cache": true
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "inputs": ["default", "{workspaceRoot}/e2e/utils/**/*"],
+      "cache": true
+    },
+    "e2e-suite": {
+      "dependsOn": ["^build"],
+      "inputs": ["default", "{workspaceRoot}/e2e/utils/**/*.ts"],
+      "cache": true
+    },
+    "check-rule-docs": {
+      "cache": true
+    },
+    "check-rule-lists": {
+      "cache": true
+    },
+    "check-rule-configs": {
+      "cache": true
+    },
+    "@nx/jest:jest": {
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "cache": true,
+      "options": {
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals", "projectSpecificFiles"],
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml",
+      {
+        "runtime": "node -e 'console.log(`${process.platform}-${process.arch}`)'"
+      },
+      {
+        "runtime": "node --version"
+      },
+      {
+        "runtime": "npm --version"
+      },
+      {
+        "runtime": "pnpm --version"
+      }
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/eslint.config.js"
+    ],
+    "projectSpecificFiles": []
+  },
+  "bust": 1
+}

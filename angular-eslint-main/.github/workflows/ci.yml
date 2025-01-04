@@ -1,0 +1,170 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, 'next-major-release/**']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NX_BRANCH: ${{ github.event.pull_request.number || github.ref_name }}
+  NX_VERBOSE_LOGGING: false
+  NX_CLOUD_DEBUG_URLS: false
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  primary:
+    name: Primary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install Node.js per package.json
+        uses: actions/setup-node@v4
+        with:
+          # Use the volta.node property as the source of truth
+          node-version-file: 'package.json'
+          cache: 'pnpm'
+
+      - name: Set the node version in NX_CI_EXECUTION_ENV
+        # Added the - at the end to function as a separator to improve readability in the PR comment from the Nx cloud app
+        run: echo "NX_CI_EXECUTION_ENV=Node $(node --version) -" >> $GITHUB_ENV
+
+      - name: Start Nx Cloud CI Run
+        run: pnpm dlx nx-cloud start-ci-run --distribute-on="6 custom-linux-medium-plus-js" --stop-agents-after="e2e-suite"
+
+      - name: Install dependencies (skipping postinstall)
+        # We use --ignore-scripts to skip automatic postinstall and give us more control over distributing build tasks
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+          pnpm check-clean-workspace-after-install
+
+      - name: Formatting and config file checks
+        run: |
+          pnpm nx-cloud record -- pnpm format-check
+          pnpm nx-cloud record -- pnpm nx sync:check
+
+      - name: Run parallel distributed tasks for build, typecheck, check-rule-docs, check-rule-lists, check-rule-configs, lint and test targets
+        uses: jameshenry/parallel-bash-commands@v1
+        with:
+          # Note that the typecheck target *also* typechecks tests and tools,
+          # whereas the build only checks src files
+          cmd1: pnpm nx run-many -t build,typecheck,check-rule-docs,lint,check-rule-lists,check-rule-configs
+          cmd2: pnpm nx run-many -t test --codeCoverage
+
+      # Run distributed e2e test suites with independent local registries (max 1 per agent via parallel=1)
+      - name: Run e2e test suites
+        run: pnpm nx run-many -t e2e-suite --parallel 1
+
+      - name: Publish code coverage report
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/packages/**/lcov.info
+          flags: unittest
+          name: codecov
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Stop all running agents for this CI run
+        # It's important that we always run this step, otherwise in the case of any failures in preceding non-Nx steps, the agents will keep running and waste billable minutes
+        if: ${{ always() }}
+        run: pnpm nx-cloud stop-all-agents
+
+  unit_tests_on_other_node_versions:
+    name: Unit tests on other supported Node versions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Additionally supported node versions taken from:
+        # https://angular.dev/reference/versions
+        node: ['^18.19.1', '^22.0.0']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+
+      - name: Set the node version in NX_CI_EXECUTION_ENV
+        # Added the - at the end to function as a separator to improve readability in the PR comment from the Nx cloud app
+        run: echo "NX_CI_EXECUTION_ENV=Node $(node --version) -" >> $GITHUB_ENV
+
+      - name: Install dependencies (skipping postinstall)
+        # We use --ignore-scripts to skip automatic postinstall and give us more control over distributing build tasks
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+
+      - name: Run build targets on Node ${{ matrix.node }} (not distributable)
+        env:
+          # We cannot distribute these because the agents are set up to run the primary node version, not this alternative we are testing
+          NX_CLOUD_DISTRIBUTED_EXECUTION: false
+        run: pnpm build
+
+      - name: Run test targets on Node ${{ matrix.node }} (not distributable)
+        env:
+          # We cannot distribute these because the agents are set up to run the primary node version, not this alternative we are testing
+          NX_CLOUD_DISTRIBUTED_EXECUTION: false
+        run: pnpm test
+
+      - run: pnpm nx-cloud complete-ci-run
+        # It's important that we always run this step, otherwise in the case of any failures in preceding non-Nx steps, the agents will keep running and waste billable minutes
+        if: ${{ always() }}
+
+  publish_canary_version:
+    name: Publish the latest code as a canary version
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # needed for provenance data generation
+    needs: [primary]
+    # prevents this action from running on forks
+    if: (github.repository == 'angular-eslint/angular-eslint') && (github.ref == 'refs/heads/main')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # we need the tags to be available
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install Node.js per package.json
+        uses: actions/setup-node@v4
+        with:
+          # Use the volta.node property as the source of truth
+          node-version-file: 'package.json'
+          cache: 'pnpm'
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        env:
+          # We cannot distribute this because the agents have already been stopped by this point
+          # but it should not matter because this should be a full cloud cache hit
+          NX_CLOUD_DISTRIBUTED_EXECUTION: false
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Figure out and apply the next canary version
+        run: pnpm tsx ./tools/scripts/apply-canary-version.ts
+
+      - name: Publish all packages to npm with the canary tag
+        run: pnpm nx release publish --tag canary
+        env:
+          NX_CLOUD_DISTRIBUTED_EXECUTION: false
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

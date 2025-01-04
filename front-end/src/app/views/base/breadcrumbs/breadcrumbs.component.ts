@@ -19,7 +19,7 @@ import {
     imports: [RowComponent, ColComponent, TextColorDirective, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, BreadcrumbComponent, BreadcrumbItemComponent, NgClass, BreadcrumbRouterComponent]
 })
 export class BreadcrumbsComponent implements OnInit {
-  public items = <any>[];
+  public items = [] as any;
 
   constructor() {}
 
