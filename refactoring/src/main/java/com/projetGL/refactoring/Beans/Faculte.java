@@ -13,7 +13,7 @@ public class Faculte {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long faculteId;
+    private Long id;
 
     @Column(nullable = false)
     private String nom;
@@ -21,4 +21,9 @@ public class Faculte {
     @ManyToOne
     @JoinColumn(name = "universite_id")
     private Universite universite;
+
+    public Faculte(String faculteDesScience, Universite universite) {
+        this.nom = faculteDesScience;
+        this.universite = universite;
+    }
 }

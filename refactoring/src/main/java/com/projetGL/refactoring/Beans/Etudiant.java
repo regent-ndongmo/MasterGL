@@ -37,5 +37,6 @@ public class Etudiant{
         this.matricule = etudiant.getMatricule();
         this.niveauEtude = etudiant.getNiveau();
         this.user = etudiant.getUser();
+        this.filiere = etudiant.getFiliere();
     }
 }

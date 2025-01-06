@@ -20,4 +20,9 @@ public class Universite {
 
     @Column(nullable = false)
     private String adresse;
+
+    public Universite(String universiteDeDschang, String s) {
+        this.nom = universiteDeDschang;
+        this. adresse = s;
+    }
 }
