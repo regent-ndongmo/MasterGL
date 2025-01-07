@@ -1,7 +1,13 @@
 package com.projetGL.refactoring.Services.impl;
 
 import com.projetGL.refactoring.Beans.Etudiant;
+import com.projetGL.refactoring.Beans.Faculte;
+import com.projetGL.refactoring.Beans.Filiere;
+import com.projetGL.refactoring.Beans.Universite;
 import com.projetGL.refactoring.Repository.EtudiantRepository;
+import com.projetGL.refactoring.Repository.FacultyRepository;
+import com.projetGL.refactoring.Repository.FiliereRepository;
+import com.projetGL.refactoring.Repository.UniversityRepository;
 import com.projetGL.refactoring.Services.EtudiantService;
 import com.projetGL.refactoring.authentification.Beans.Role;
 import com.projetGL.refactoring.authentification.Beans.User;
@@ -42,13 +48,25 @@ class EtudiantServiceImplTest {
     private EtudiantRepository etudiantRepository;
 
     @Mock
+    private FiliereRepository filiereRepository;
+
+    @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private FacultyRepository facultyRepository;
+
+    @Mock
+    private UniversityRepository universityRepository;
 
     private EtudiantDto etudiantDto1;
     private EtudiantDto etudiantDto2;
     private User user;
     private User user1;
     private Role role;
+    private Filiere filiere;
+    private Faculte faculte;
+    private Universite universite;
 
     @BeforeEach
     void setUp() {
@@ -57,20 +75,27 @@ class EtudiantServiceImplTest {
         // Initialiser le rôle
         role = new Role();
         role.setRoleName("ROLE_USER");
+        universite = new Universite(1L, "Universite de dschang", "Dschang, Ouest, Cameroun");
+        faculte = new Faculte(1L, "faculte des science", universite);
+        filiere = new Filiere(1L,"informatique", faculte);
 
-        // Mocker le comportement de roleRepository.findByRoleName
+        // Mocker le comportement
         when(roleRepository.findByRoleName(anyString())).thenReturn(Optional.of(role));
+        when(universityRepository.findById(anyLong())).thenReturn(Optional.of(universite));
+        when(facultyRepository.findById(anyLong())).thenReturn(Optional.of(faculte));
+        when(filiereRepository.findById(anyLong())).thenReturn(Optional.of(filiere));
+
 
         user = new User(1L, "admin@test.com", "admin", "admin", "kit156", "657730825", passwordEncoder.encode("password"), "Dschang", role);
         user1 = new User(2L, "jauress@test.com", "admin", "admin", "kit156", "657730825", passwordEncoder.encode("password"), "Dschang", role);
-
-        etudiantDto1 = new EtudiantDto(1L, "12345", "niveau 1", user);
-        etudiantDto2 = new EtudiantDto(2L, "67890", "niveau 2", user1);
+        etudiantDto1 = new EtudiantDto(1L, "12345", "niveau 1", user, filiere);
+        etudiantDto2 = new EtudiantDto(2L, "67890", "niveau 2", user1, filiere);
     }
 
     @Test
     void createEtudiant() {
         when(userRepository.findByIdOrNull(user.getId())).thenReturn(user);
+        when(filiereRepository.findById(anyLong())).thenReturn(Optional.of(filiere));
 
         Etudiant expectedEtudiant = new Etudiant(etudiantDto1);
         expectedEtudiant.setMatricule("GL12345");
